@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import itertools
+import math
 import re
-P = 2
+P = 10
 problem = 'Data/st70.tsp'
 
 f = open(problem, 'r')
@@ -39,14 +39,35 @@ plt.plot(points[:,0], points[:,1], 'o')
 plt.show()
 
 def generate_permutations(N):
-    perms = list(itertools.permutations(list(np.arange(N)), N))
-    parents = []
-    for i in range(P):
-        parents.append(perms[i])
-    return parents
+    perms = []
+    counter = 0
+    fact = math.factorial(N)
 
-print(generate_permutations(6))
+    while  counter < fact and counter < P:
+        n = list(np.random.permutation(N))
+        if(n not in perms):
+            perms.append(n)
+            counter+= 1
+    return perms
 
 
+parents = generate_permutations(num_points)
+print(parents[0])
+
+def create_edges(ls):
+    ret = [0] * num_points
+    ret[ls[num_points-1]] = ls[0]
+    for i in range(num_points-1):
+        ret[ls[i]] = ls[i+1]
+    return ret
+
+
+print(create_edges(parents[0]))
+
+def crossover(P1, P2):
+    count = 0
+    N = len(P1)
+    while count < N:
+        count+=1
 
 
