@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math
 import re
+import random
+
 P = 10
 problem = 'Data/st70.tsp'
 
@@ -64,10 +66,31 @@ def create_edges(ls):
 
 print(create_edges(parents[0]))
 
+def point_included(p, chain):
+
+
 def crossover(P1, P2):
     count = 0
+    child = [-1]*num_points
     N = len(P1)
+    curr = random.randint(0, num_points) #random initial start
     while count < N:
-        count+=1
+        opt1 = P1[curr]
+        opt2 = P2[curr]
+        if(opt1 in child and opt2 in child):# will have to double check how to check if a point is in the child already
+            rn = random.randint(0, num_points)
+            while(rn in child):
+                rn = random.randint(0, num_points)
+            child[curr] = rn
+            curr = rn
+            count+=1
+
+        elif(not (opt1 in child or opt2  in child) ):
+            d1 = np.linalg.norm(points[curr]- points[opt1])
+            d2 = np.linalg.norm(points[curr]- points[opt2])
+        else:
+            rn = random.randint(0, num_points)
+            while(rn in child):
+                rn = random.randint(0, num_points)
 
 
