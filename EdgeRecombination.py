@@ -79,9 +79,9 @@ def point_included(p, chain):
 def crossover(P1, P2):
     count = 0
     child = [-1]*num_points
-    N = len(P1)
+
     curr = random.randint(0, num_points-1) #random initial start
-    while count < N:
+    while count < num_points-1:
         opt1 = P1[curr]
         opt2 = P2[curr]
         if(point_included(opt1,child) and point_included(opt2,child)):# will have to double check how to check if a point is in the child already
@@ -111,7 +111,9 @@ def crossover(P1, P2):
 
             child[curr] = nxt
             curr  = nxt
-         count+=1
+
+        count+=1
+    return child
 
 
 def chain_length(chain):
@@ -130,7 +132,7 @@ def decode_edges(chain):
 
 
 
-max_iterations = 20
+max_iterations = 30
 iter = 0
 
 parents = generate_permutations(num_points)
@@ -144,15 +146,17 @@ while(iter<max_iterations):
             child = crossover(encoded_parents[i], encoded_parents[j])
             children.append(child)
 
-    sorted_children = sorted(children, key = lambda X: chain_length(X))
+    sorted_children = sorted(children, key = chain_length)
     encoded_parents = sorted_children[:P]
     print(chain_length(encoded_parents[0]))
     iter+=1
 
 winner = encoded_parents[0]
 print("Length is , ", chain_length(winner))
-dp = decode_edges(winner)
-plt.plot(dp[:,0], dp[:,1], 'o')
+dp = np.array(decode_edges(winner))
+
+plt.plot(points[:,0], points[:,1], 'o')
+plt.plot(dp[:,0], dp[:,1], 'r--', lw=2)
 plt.show()
 
 
