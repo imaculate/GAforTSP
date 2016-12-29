@@ -37,8 +37,8 @@ for i in range(num_points):
 f.close()
 
 points = np.array(points).astype(float)
-plt.plot(points[:,0], points[:,1], 'o')
-plt.show()
+# plt.plot(points[:,0], points[:,1], 'o')
+# plt.show()
 
 def generate_permutations(N):
     perms = []
@@ -53,18 +53,21 @@ def generate_permutations(N):
     return perms
 
 
-parents = generate_permutations(num_points)
-print(parents[0])
-
-def create_edges(ls):
-    ret = [0] * num_points
-    ret[ls[num_points-1]] = ls[0]
-    for i in range(num_points-1):
-        ret[ls[i]] = ls[i+1]
-    return ret
 
 
-print(create_edges(parents[0]))
+def create_edges(parents):
+    rets = []
+    for parent in parents:
+        ret = [-1] * num_points
+        ret[parent[num_points-1]] = parent[0]
+        for i in range(num_points-1):
+            ret[parent[i]] = parent[i+1]
+        rets.append(ret)
+
+    return rets
+
+
+
 
 def point_included(p, chain):
     if( p not in chain and chain[p]==-1):
@@ -100,6 +103,7 @@ def crossover(P1, P2):
 
             d1 = np.linalg.norm(points[curr]- points[opt1])
             d2 = np.linalg.norm(points[curr]- points[opt2])
+
             if(d1<d2):
                 nxt = opt1
             else:
@@ -115,3 +119,43 @@ def chain_length(chain):
     for i  in range(num_points):
         total+= np.linalg.norm(points[i]- points[chain[i]])
     return total
+
+def decode_edges(chain):
+    decoded = []
+    curr = 0
+    for i in range(num_points):
+        decoded.append(points[curr])
+        curr = chain[curr]
+    return decoded
+
+
+
+max_iterations = 20
+iter = 0
+
+parents = generate_permutations(num_points)
+encoded_parents = create_edges(parents)
+
+while(iter<max_iterations):
+    print("Iteration number  ,", iter+1)
+    children = []
+    for i in range(P):
+        for j in range(i+1,P):
+            child = crossover(encoded_parents[i], encoded_parents[j])
+            children.append(child)
+
+    sorted_children = sorted(children, key = lambda X: chain_length(X))
+    encoded_parents = sorted_children[:P]
+    print(chain_length(encoded_parents[0]))
+    iter+=1
+
+winner = encoded_parents[0]
+print("Length is , ", chain_length(winner))
+dp = decode_edges(winner)
+plt.plot(dp[:,0], dp[:,1], 'o')
+plt.show()
+
+
+
+
+
