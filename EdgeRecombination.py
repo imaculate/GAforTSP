@@ -111,4 +111,7 @@ def crossover(P1, P2):
 
 
 def chain_length(chain):
-    
+    total  = 0
+    for i  in range(num_points):
+        total+= np.linalg.norm(points[i]- points[chain[i]])
+    return total
