@@ -67,30 +67,48 @@ def create_edges(ls):
 print(create_edges(parents[0]))
 
 def point_included(p, chain):
+    if( p not in chain and chain[p]==-1):
+        return False
+    else:
+        return True
 
 
 def crossover(P1, P2):
     count = 0
     child = [-1]*num_points
     N = len(P1)
-    curr = random.randint(0, num_points) #random initial start
+    curr = random.randint(0, num_points-1) #random initial start
     while count < N:
         opt1 = P1[curr]
         opt2 = P2[curr]
-        if(opt1 in child and opt2 in child):# will have to double check how to check if a point is in the child already
-            rn = random.randint(0, num_points)
-            while(rn in child):
-                rn = random.randint(0, num_points)
+        if(point_included(opt1,child) and point_included(opt2,child)):# will have to double check how to check if a point is in the child already
+            rn = random.randint(0, num_points-1)
+            while(point_included(rn,child)):
+                rn = random.randint(0, num_points-1)
             child[curr] = rn
             curr = rn
-            count+=1
 
-        elif(not (opt1 in child or opt2  in child) ):
+        else:
+            if(point_included(opt1,child) or point_included(opt2,child)):
+                rn = random.randint(0, num_points-1)
+                while(point_included(rn,child)):
+                    rn = random.randint(0, num_points-1)
+                if(point_included(opt1,child)):
+                    opt1 = rn
+                elif(point_included(opt2,child)):
+                    opt2 = rn
+
             d1 = np.linalg.norm(points[curr]- points[opt1])
             d2 = np.linalg.norm(points[curr]- points[opt2])
-        else:
-            rn = random.randint(0, num_points)
-            while(rn in child):
-                rn = random.randint(0, num_points)
+            if(d1<d2):
+                nxt = opt1
+            else:
+                nxt = opt2
+
+            child[curr] = nxt
+            curr  = nxt
+         count+=1
 
 
+def chain_length(chain):
+    
