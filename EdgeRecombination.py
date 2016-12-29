@@ -80,7 +80,7 @@ def crossover(P1, P2):
     count = 0
     child = [-1]*num_points
 
-    curr = random.randint(0, num_points-1) #random initial start
+    last = curr = random.randint(0, num_points-1) #random initial start
     while count < num_points-1:
         opt1 = P1[curr]
         opt2 = P2[curr]
@@ -113,6 +113,9 @@ def crossover(P1, P2):
             curr  = nxt
 
         count+=1
+
+    child[curr] = last
+
     return child
 
 
@@ -150,6 +153,7 @@ while(iter<max_iterations):
     encoded_parents = sorted_children[:P]
     print(chain_length(encoded_parents[0]))
     iter+=1
+
 
 winner = encoded_parents[0]
 print("Length is , ", chain_length(winner))
