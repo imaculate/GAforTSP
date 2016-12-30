@@ -76,6 +76,36 @@ def point_included(p, chain):
         return True
 
 
+def get_nearest_point(curr, child, P1, P2):
+    opt1 = P1
+    opt2 = P2
+    if(point_included(opt1,child) and point_included(opt2,child)):
+        rn = random.randint(0, num_points-1)
+        while(point_included(rn,child)):
+            rn = random.randint(0, num_points-1)
+        return rn
+
+    else:
+        if(point_included(opt1,child) or point_included(opt2,child)):
+            rn = random.randint(0, num_points-1)
+            while(point_included(rn,child)):
+                rn = random.randint(0, num_points-1)
+            if(point_included(opt1,child)):
+                opt1 = rn
+            elif(point_included(opt2,child)):
+                opt2 = rn
+
+        d1 = np.linalg.norm(points[curr]- points[opt1])
+        d2 = np.linalg.norm(points[curr]- points[opt2])
+
+        if(d1<d2):
+            nxt = opt1
+        else:
+            nxt = opt2
+
+        return nxt
+
+
 def crossover(P1, P2):
     count = 0
     child = [-1]*num_points
@@ -84,12 +114,13 @@ def crossover(P1, P2):
     while count < num_points-1:
         opt1 = P1[curr]
         opt2 = P2[curr]
-        if(point_included(opt1,child) and point_included(opt2,child)):# will have to double check how to check if a point is in the child already
+        if((point_included(opt1,child) and point_included(opt2,child)) or count>=num_points-3):# will have to double check how to check if a point is in the child already
             rn = random.randint(0, num_points-1)
             while(point_included(rn,child)):
                 rn = random.randint(0, num_points-1)
             child[curr] = rn
             curr = rn
+            count+=1
 
         else:
             if(point_included(opt1,child) or point_included(opt2,child)):
@@ -101,18 +132,33 @@ def crossover(P1, P2):
                 elif(point_included(opt2,child)):
                     opt2 = rn
 
-            d1 = np.linalg.norm(points[curr]- points[opt1])
-            d2 = np.linalg.norm(points[curr]- points[opt2])
+
+            child1 = list(child)
+            child1[curr] = opt1
+            opt_sec1 = P1[opt1]
+            opt_sec2  = P2[opt2]
+            s1 = get_nearest_point(opt1, child1, opt_sec1, opt_sec2)
+            d1 = np.linalg.norm(points[curr]- points[opt1]) + np.linalg.norm(points[s1]- points[opt1])
+
+            child2 = list(child)
+            child2[curr] = opt2
+            s2 = get_nearest_point(opt2, child2, opt_sec1, opt_sec2)
+            d2 = np.linalg.norm(points[curr]- points[opt2]) + np.linalg.norm(points[s2]- points[opt2])
 
             if(d1<d2):
                 nxt = opt1
+                next_sec = s1
             else:
                 nxt = opt2
+                next_sec = s2
 
             child[curr] = nxt
-            curr  = nxt
+            child[nxt] = next_sec
+            curr  = next_sec
+            curr  = next_sec
+            count+=2
 
-        count+=1
+
 
     child[curr] = last
 
@@ -135,7 +181,7 @@ def decode_edges(chain):
 
 
 
-max_iterations = 30
+max_iterations = 50
 iter = 0
 
 parents = generate_permutations(num_points)
@@ -163,6 +209,7 @@ while(iter<max_iterations):
     iter+=1
 
 
+
 winner = encoded_parents[0]
 print("Length is , ", chain_length(winner))
 dp = np.array(decode_edges(winner))
@@ -171,7 +218,7 @@ plt.plot(points[:,0], points[:,1], 'o')
 plt.plot(dp[:,0], dp[:,1], 'r--', lw=2)
 plt.show()
 
-
+#next idea, do some kind of mutation, or 2-opt, 3-opt
 
 
 
