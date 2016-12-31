@@ -168,7 +168,7 @@ def crossover(P1, P2):
 def chain_length(chain):
     total  = 0
     for i  in range(num_points):
-        total+= np.linalg.norm(points[i]- points[chain[i]])
+        total+= int(np.linalg.norm(points[i]- points[chain[i]]))
     return total
 
 def decode_edges(chain):
@@ -178,6 +178,14 @@ def decode_edges(chain):
         decoded.append(points[curr])
         curr = chain[curr]
     return decoded
+
+
+def mutate_inverse(chain):
+    rn1 = random.randint(0, num_points-1)
+    rn2 =  random.randint(0, num_points-1)
+    while(rn1==rn2):
+         random.randint(0, num_points-1)
+    for i in range(rn1, ((rn1+rn2)/2):
 
 
 
