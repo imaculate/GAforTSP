@@ -53,16 +53,17 @@ def generate_permutations(N):
     return perms
 
 
-
+def encode_edge(parent):
+    ret = [-1] * num_points
+    ret[parent[num_points-1]] = parent[0]
+    for i in range(num_points-1):
+        ret[parent[i]] = parent[i+1]
+    return ret
 
 def create_edges(parents):
     rets = []
     for parent in parents:
-        ret = [-1] * num_points
-        ret[parent[num_points-1]] = parent[0]
-        for i in range(num_points-1):
-            ret[parent[i]] = parent[i+1]
-        rets.append(ret)
+        rets.append(encode_edge(parent))
 
     return rets
 
@@ -185,7 +186,16 @@ def mutate_inverse(chain):
     rn2 =  random.randint(0, num_points-1)
     while(rn1==rn2):
          random.randint(0, num_points-1)
-    for i in range(rn1, ((rn1+rn2)/2):
+    left = min(rn1, rn2)
+    right = max(rn1, rn2)
+
+    while(right>left):
+        temp = chain[left]
+        chain[left] = chain[right]
+        chain[right] = temp
+        left+=1
+        right-=1
+
 
 
 
@@ -210,11 +220,21 @@ while(iter<max_iterations):
     sorted_children = sorted(children, key = chain_length)
     encoded_parents = sorted_children[:P]
     shortest = chain_length(encoded_parents[0])
-    if abs(prev_short- shortest) < EPS:
+    iter+=1
+    if (prev_short ==shortest):
+        print("End of crossover, beginning mutation")
         break
     prev_short = shortest
     print(shortest)
-    iter+=1
+
+for i in range(max_iterations-iter):
+    print("Iteration number  ,", i+1)
+    mutes = [encode_edge(mutate_inverse(decode_edges(chain))) for chain in encoded_parents]
+    children  = encoded_parents + mutes
+    sorted_children = sorted(children, key = chain_length)
+    encoded_parents = sorted_children[:P]
+
+    print(chain_length(encoded_parents[0]))
 
 
 

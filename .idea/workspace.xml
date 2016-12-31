@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="66bfb5da-d065-4ec7-9b44-7348e04fb570" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/EdgeRecombinationLookAhead.py" afterPath="$PROJECT_DIR$/EdgeRecombinationLookAhead.py" />
     </list>
     <ignored path="Code.iws" />
@@ -27,8 +26,8 @@
       <file leaf-file-name="EdgeRecombinationLookAhead.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/EdgeRecombinationLookAhead.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.80051816">
-              <caret line="187" column="24" selection-start-line="187" selection-start-column="24" selection-end-line="187" selection-end-column="24" />
+            <state vertical-scroll-proportion="0.7435233">
+              <caret line="229" column="36" selection-start-line="229" selection-start-column="36" selection-end-line="229" selection-end-column="36" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
               </folding>
@@ -614,7 +613,7 @@
         <state vertical-scroll-proportion="0.36494252">
           <caret line="64" column="30" selection-start-line="64" selection-start-column="30" selection-end-line="64" selection-end-column="30" />
           <folding>
-            <element signature="e#1#19#0" expanded="true" />
+            <element signature="e#1#19#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -629,8 +628,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/EdgeRecombinationLookAhead.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.80051816">
-          <caret line="187" column="24" selection-start-line="187" selection-start-column="24" selection-end-line="187" selection-end-column="24" />
+        <state vertical-scroll-proportion="0.7435233">
+          <caret line="229" column="36" selection-start-line="229" selection-start-column="36" selection-end-line="229" selection-end-column="36" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
           </folding>
