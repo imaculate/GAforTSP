@@ -155,7 +155,7 @@ def crossover(P1, P2):
 
             child[curr] = nxt
             child[nxt] = next_sec
-            curr  = next_sec
+
             curr  = next_sec
             count+=2
 
@@ -172,6 +172,11 @@ def chain_length(chain):
         total+= int(np.linalg.norm(points[i]- points[chain[i]]))
     return total
 
+def chain_length_decoded(chain):
+    total  = 0
+    for i  in range(num_points):
+        total+= int(np.linalg.norm(points[chain[i]]- points[chain[(i+1)%num_points]]))
+    return total
 def decode_edges(chain):
     decoded = []
     curr = 0
@@ -180,24 +185,90 @@ def decode_edges(chain):
         curr = chain[curr]
     return decoded
 
+def decode_permutation(chain):
+    decoded = [-1]*num_points
+    curr = 0
+    for i in range(num_points):
+        decoded[i] = curr
+        curr = chain[curr]
+    return decoded
 
-def mutate_inverse(chain):
+def mutate_inverse(parent):
+    chain = list(parent)
+    # edges = [-1]*num_points
+    # for i in range(num_points-1):
+    #     edges[i] = int(np.linalg.norm(points[chain[i]]-points[chain[i+1]]))
+    # edges[num_points-1]=int(np.linalg.norm(points[chain[num_points-1]]-points[chain[0]]))
+    # sorted_edges = sorted(edges)
+    # e1 = edges.index(sorted_edges[0])
+    # j=1
+    # e2 = edges.index(sorted_edges[j])
+    # while(abs(e2-e1)<2):
+    #     j+=1
+    #     e2 = edges.index(sorted_edges[j])
+    #
+    # left = min(e1, e2)
+    # right = max(e1, e2)+1
+    # if right==num_points:#shift everyth ing left
+    #     chain = chain[1:]+ chain[0]
+    #     left-=1
+    #     right-=1
     rn1 = random.randint(0, num_points-1)
-    rn2 =  random.randint(0, num_points-1)
+    rn2 = random.randint(0, num_points-1)
     while(rn1==rn2):
-         random.randint(0, num_points-1)
+        rn2 = random.randint(0, num_points-1)
     left = min(rn1, rn2)
     right = max(rn1, rn2)
-
+    print("Inverting between ", left, " and ", right)
     while(right>left):
         temp = chain[left]
         chain[left] = chain[right]
         chain[right] = temp
         left+=1
         right-=1
+    return chain
+
+def twoOptSwap(tour, i, k):
+    dec = k
+    for c in range(i,int((k+1+i)/2)):
+
+        tmp = tour[dec]
+        tour[dec]= tour[c]
+        tour[c] = tmp
+        dec-=1
 
 
 
+def calc_savings(tour, i, k):
+    d1 = int(np.linalg.norm(points[tour[(i-1)%num_points]]-points[tour[k]]) + np.linalg.norm(points[tour[i]]-points[tour[(k+1)%num_points]]))
+    d2  =int(np.linalg.norm(points[tour[(i-1)%num_points]]- points[tour[i]]) + np.linalg.norm(points[tour[k]]- points[tour[(k+1)%num_points]]))
+    return d1-d2
+
+def twoOpt(tour):
+    improve = 0
+    while ( improve < 20 ):
+
+        best_distance = chain_length_decoded(tour)
+
+        for i in range(num_points-1):
+
+            for k in range(i+1, num_points):
+                if(k==(i-1)%num_points):
+                    continue
+                savings = calc_savings(tour, i, k)
+
+                if (  savings < 0 ):
+                    improve = 0
+                    twoOptSwap( tour,i, k )
+                    best_distance -= savings
+                    print(best_distance)
+
+
+        improve +=1
+    # plt.plot(points[:,0], points[:,1], 'o')
+    # plt.plot(tour[:,0], tour[:,1], 'r--', lw=2)
+    # plt.show()
+    return tour
 
 max_iterations = 50
 iter = 0
@@ -221,20 +292,18 @@ while(iter<max_iterations):
     encoded_parents = sorted_children[:P]
     shortest = chain_length(encoded_parents[0])
     iter+=1
-    if (prev_short ==shortest):
+    if (abs(prev_short -shortest)<=EPS):
         print("End of crossover, beginning mutation")
         break
     prev_short = shortest
     print(shortest)
 
-for i in range(max_iterations-iter):
-    print("Iteration number  ,", i+1)
-    mutes = [encode_edge(mutate_inverse(decode_edges(chain))) for chain in encoded_parents]
-    children  = encoded_parents + mutes
-    sorted_children = sorted(children, key = chain_length)
-    encoded_parents = sorted_children[:P]
 
-    print(chain_length(encoded_parents[0]))
+mutes = [encode_edge(twoOpt(decode_permutation(chain))) for chain in encoded_parents]
+children  = encoded_parents + mutes
+sorted_children = sorted(children, key = chain_length)
+encoded_parents = sorted_children[:P]
+
 
 
 
