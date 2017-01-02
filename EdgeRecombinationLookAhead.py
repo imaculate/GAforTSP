@@ -3,9 +3,10 @@ import numpy as np
 import math
 import re
 import random
+import time
 
 P = 30
-problem = 'Data/st70.tsp'
+problem = 'Data/fl417  .tsp'
 
 f = open(problem, 'r')
 for i in range(6):
@@ -193,40 +194,6 @@ def decode_permutation(chain):
         curr = chain[curr]
     return decoded
 
-def mutate_inverse(parent):
-    chain = list(parent)
-    # edges = [-1]*num_points
-    # for i in range(num_points-1):
-    #     edges[i] = int(np.linalg.norm(points[chain[i]]-points[chain[i+1]]))
-    # edges[num_points-1]=int(np.linalg.norm(points[chain[num_points-1]]-points[chain[0]]))
-    # sorted_edges = sorted(edges)
-    # e1 = edges.index(sorted_edges[0])
-    # j=1
-    # e2 = edges.index(sorted_edges[j])
-    # while(abs(e2-e1)<2):
-    #     j+=1
-    #     e2 = edges.index(sorted_edges[j])
-    #
-    # left = min(e1, e2)
-    # right = max(e1, e2)+1
-    # if right==num_points:#shift everyth ing left
-    #     chain = chain[1:]+ chain[0]
-    #     left-=1
-    #     right-=1
-    rn1 = random.randint(0, num_points-1)
-    rn2 = random.randint(0, num_points-1)
-    while(rn1==rn2):
-        rn2 = random.randint(0, num_points-1)
-    left = min(rn1, rn2)
-    right = max(rn1, rn2)
-    print("Inverting between ", left, " and ", right)
-    while(right>left):
-        temp = chain[left]
-        chain[left] = chain[right]
-        chain[right] = temp
-        left+=1
-        right-=1
-    return chain
 
 def twoOptSwap(tour, i, k):
     dec = k
@@ -260,7 +227,7 @@ def twoOpt(tour):
                 if (  savings < 0 ):
                     improve = 0
                     twoOptSwap( tour,i, k )
-                    best_distance -= savings
+                    best_distance += savings
                     print(best_distance)
 
 
@@ -270,13 +237,14 @@ def twoOpt(tour):
     # plt.show()
     return tour
 
-max_iterations = 50
+max_iterations = 200
 iter = 0
 
 parents = generate_permutations(num_points)
 encoded_parents = create_edges(parents)
 prev_short = -1
 
+to = time.time()
 while(iter<max_iterations):
     print("Iteration number  ,", iter+1)
     children = []
@@ -305,7 +273,8 @@ sorted_children = sorted(children, key = chain_length)
 encoded_parents = sorted_children[:P]
 
 
-
+t1 = time.time()
+print("It took ,", t1-to, "seconds")
 
 winner = encoded_parents[0]
 print("Length is , ", chain_length(winner))
