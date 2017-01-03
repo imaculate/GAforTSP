@@ -3,6 +3,7 @@ import numpy as np
 import math
 import re
 import random
+import time
 
 P = 30
 problem = 'Data/st70.tsp'
@@ -142,6 +143,7 @@ parents = generate_permutations(num_points)
 encoded_parents = create_edges(parents)
 prev_short = -1
 
+t0 = time.time()
 while(iter<max_iterations):
     print("Iteration number  ,", iter+1)
     children = []
@@ -165,8 +167,10 @@ while(iter<max_iterations):
 
 winner = encoded_parents[0]
 print("Length is , ", chain_length(winner))
-dp = np.array(decode_edges(winner))
+t1 = time.time()
+print("It took ", t1-t0, " seconds")
 
+dp = np.array(decode_edges(winner))
 plt.plot(points[:,0], points[:,1], 'o')
 plt.plot(dp[:,0], dp[:,1], 'r--', lw=2)
 plt.show()

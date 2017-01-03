@@ -6,7 +6,7 @@ import random
 import time
 
 P = 30
-problem = 'Data/fl417  .tsp'
+problem = 'Data/p654.tsp'
 
 f = open(problem, 'r')
 for i in range(6):
@@ -170,13 +170,13 @@ def crossover(P1, P2):
 def chain_length(chain):
     total  = 0
     for i  in range(num_points):
-        total+= int(np.linalg.norm(points[i]- points[chain[i]]))
+        total+= round(np.linalg.norm(points[i]- points[chain[i]]))
     return total
 
 def chain_length_decoded(chain):
     total  = 0
     for i  in range(num_points):
-        total+= int(np.linalg.norm(points[chain[i]]- points[chain[(i+1)%num_points]]))
+        total+= round(np.linalg.norm(points[chain[i]]- points[chain[(i+1)%num_points]]))
     return total
 def decode_edges(chain):
     decoded = []
@@ -207,8 +207,8 @@ def twoOptSwap(tour, i, k):
 
 
 def calc_savings(tour, i, k):
-    d1 = int(np.linalg.norm(points[tour[(i-1)%num_points]]-points[tour[k]]) + np.linalg.norm(points[tour[i]]-points[tour[(k+1)%num_points]]))
-    d2  =int(np.linalg.norm(points[tour[(i-1)%num_points]]- points[tour[i]]) + np.linalg.norm(points[tour[k]]- points[tour[(k+1)%num_points]]))
+    d1 = round(np.linalg.norm(points[tour[(i-1)%num_points]]-points[tour[k]]) + np.linalg.norm(points[tour[i]]-points[tour[(k+1)%num_points]]))
+    d2  =round(np.linalg.norm(points[tour[(i-1)%num_points]]- points[tour[i]]) + np.linalg.norm(points[tour[k]]- points[tour[(k+1)%num_points]]))
     return d1-d2
 
 def twoOpt(tour):
