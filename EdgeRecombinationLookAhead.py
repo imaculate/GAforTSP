@@ -6,7 +6,7 @@ import random
 import time
 
 P = 30
-problem = 'Data/p654.tsp'
+problem = 'Data/st70.tsp'
 
 f = open(problem, 'r')
 for i in range(6):
@@ -267,10 +267,10 @@ while(iter<max_iterations):
     print(shortest)
 
 
-mutes = [encode_edge(twoOpt(decode_permutation(chain))) for chain in encoded_parents]
-children  = encoded_parents + mutes
-sorted_children = sorted(children, key = chain_length)
-encoded_parents = sorted_children[:P]
+# mutes = [encode_edge(twoOpt(decode_permutation(chain))) for chain in encoded_parents]
+# children  = encoded_parents + mutes
+# sorted_children = sorted(children, key = chain_length)
+# encoded_parents = sorted_children[:P]
 
 
 t1 = time.time()
