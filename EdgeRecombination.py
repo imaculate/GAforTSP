@@ -6,7 +6,7 @@ import random
 import time
 
 P = 30
-problem = 'Data/st70.tsp'
+problem = 'Data/pr107.tsp'
 
 f = open(problem, 'r')
 for i in range(6):
@@ -123,7 +123,8 @@ def crossover(P1, P2):
 def chain_length(chain):
     total  = 0
     for i  in range(num_points):
-        total+= np.linalg.norm(points[i]- points[chain[i]])
+        total+= round(np.linalg.norm(points[i]- points[chain[i]]))
+
     return total
 
 def decode_edges(chain):
@@ -136,7 +137,7 @@ def decode_edges(chain):
 
 
 
-max_iterations = 30
+max_iterations = 200
 iter = 0
 
 parents = generate_permutations(num_points)

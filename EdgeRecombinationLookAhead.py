@@ -6,7 +6,7 @@ import random
 import time
 
 P = 30
-problem = 'Data/st70.tsp'
+problem = 'Data/pr107.tsp'
 
 f = open(problem, 'r')
 for i in range(6):
