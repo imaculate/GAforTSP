@@ -6,7 +6,7 @@ import random
 import time
 
 P = 30
-problem = 'Data/pr107.tsp'
+problem = 'Data/att48.tsp'
 
 f = open(problem, 'r')
 for i in range(6):
@@ -170,7 +170,8 @@ def crossover(P1, P2):
 def chain_length(chain):
     total  = 0
     for i  in range(num_points):
-        total+= round(np.linalg.norm(points[i]- points[chain[i]]))
+        total+= round(np.linalg.norm(points[i]- points[chain[i]])/math.sqrt(10))
+
     return total
 
 def chain_length_decoded(chain):
@@ -284,7 +285,7 @@ plt.plot(points[:,0], points[:,1], 'o')
 plt.plot(dp[:,0], dp[:,1], 'r--', lw=2)
 plt.show()
 
-#next idea, do some kind of mutation, or 2-opt, 3-opt
+
 
 
 

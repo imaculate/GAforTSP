@@ -6,7 +6,7 @@ import random
 import time
 
 P = 30
-problem = 'Data/pr107.tsp'
+problem = 'Data/st70.tsp'
 
 f = open(problem, 'r')
 for i in range(6):
@@ -67,7 +67,12 @@ def create_edges(parents):
 
     return rets
 
-
+def encode_edge(parent):
+    ret = [-1] * num_points
+    ret[parent[num_points-1]] = parent[0]
+    for i in range(num_points-1):
+        ret[parent[i]] = parent[i+1]
+    return ret
 
 
 def point_included(p, chain):
@@ -77,46 +82,28 @@ def point_included(p, chain):
         return True
 
 
-def crossover(P1, P2):
+def crossover(encoded_parents):
     count = 0
     child = [-1]*num_points
 
     last = curr = random.randint(0, num_points-1) #random initial start
+
     while count < num_points-1:
-        opt1 = P1[curr]
-        opt2 = P2[curr]
-        if(point_included(opt1,child) and point_included(opt2,child)):# will have to double check how to check if a point is in the child already
-            rn = random.randint(0, num_points-1)
-            while(point_included(rn,child)):
-                rn = random.randint(0, num_points-1)
-            child[curr] = rn
-            curr = rn
+        lens=[ np.linalg.norm(points[curr]-points[x[curr]]) for x in encoded_parents]
+        sorted_lens = sorted(lens)
 
-        else:
-            if(point_included(opt1,child) or point_included(opt2,child)):
-                rn = random.randint(0, num_points-1)
-                while(point_included(rn,child)):
-                    rn = random.randint(0, num_points-1)
-                if(point_included(opt1,child)):
-                    opt1 = rn
-                elif(point_included(opt2,child)):
-                    opt2 = rn
+        nxt_parent_index  = lens.index(sorted_lens[0])
+        hi = 0
+        while(point_included(encoded_parents[nxt_parent_index][curr],child)):
+            hi+=1
+            nxt_parent_index  = lens.index(sorted_lens[hi])
 
-            d1 = np.linalg.norm(points[curr]- points[opt1])
-            d2 = np.linalg.norm(points[curr]- points[opt2])
-
-            if(d1<d2):
-                nxt = opt1
-            else:
-                nxt = opt2
-
-            child[curr] = nxt
-            curr  = nxt
+        nxt = encoded_parents[nxt_parent_index][curr]
+        child[curr] = nxt
+        curr = nxt
 
         count+=1
-
     child[curr] = last
-
     return child
 
 
@@ -135,7 +122,61 @@ def decode_edges(chain):
         curr = chain[curr]
     return decoded
 
+def insert_mutate(chain):
+    decoded = decode_edges(chain)
+    rn1 = random.randint(0,num_points-1)
+    rn2 = random.randint(0, num_points-1)
+    while(rn2 ==rn1):
+        rn2 = random.randint(0, num_points-1)
+    left = min(rn1, rn2)
+    right = min(rn1, rn2)
+    tmp = decoded[right]
+    for m in range(left+2, right+1):
+        decoded[m]=decoded[m-1]
+    decoded[left+1] = tmp
+    return encode_edge(decoded)
 
+def flip_mutate(child):
+    decoded = decode_edges(child)
+    rn1 = random.randint(0,num_points-1)
+    rn2 = random.randint(0, num_points-1)
+    while(rn2 ==rn1):
+        rn2 = random.randint(0, num_points-1)
+    tmp = decoded[rn1]
+    decoded[rn1] = decoded[rn2]
+    decoded[rn2] = tmp
+    return encode_edge(decoded)
+
+def inverse_mutate(child):
+    decoded = decode_edges(child)
+    rn1 = random.randint(0,num_points-1)
+    rn2 = random.randint(0, num_points-1)
+    while(rn2 ==rn1):
+        rn2 = random.randint(0, num_points-1)
+    left = min(rn1, rn2)
+    right = max(rn1, rn2)
+
+    while(right>left):
+        tmp = decoded[right]
+        decoded[right] = decoded[left]
+        decoded[left] = tmp
+
+    return encode_edge(decoded)
+
+
+
+def make_mutations(child):
+    #not sure if insert, inverse or flip mutation but definitely make more than P childre
+    children = [[-1]*num_points]* ((3*P)+1)
+    children[0] = child
+    for i in range(1,P+1):
+        children[i] = insert_mutate(child)
+    for i in range(P+1, 2*P+1):
+        children[i] = flip_mutate(child)
+    for i in range(2*P+1,  3*P+1):
+        children[i]= inverse_mutate(child)
+
+    return children
 
 max_iterations = 200
 iter = 0
@@ -147,15 +188,8 @@ prev_short = -1
 t0 = time.time()
 while(iter<max_iterations):
     print("Iteration number  ,", iter+1)
-    children = []
-    for i in range(P):
-        for j in range(i):
-            child = crossover(encoded_parents[i], encoded_parents[j])
-            children.append(child)
-        for j in range(i+1,P):
-            child = crossover(encoded_parents[i], encoded_parents[j])
-            children.append(child)
-
+    child = crossover(encoded_parents)
+    children = make_mutations(child)
     sorted_children = sorted(children, key = chain_length)
     encoded_parents = sorted_children[:P]
     shortest = chain_length(encoded_parents[0])
